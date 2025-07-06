@@ -12,6 +12,8 @@ import org.opensource.service.GetIncomeStatementService;
 import org.opensource.service.GetKeyStatisticsService;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @ApplicationScoped
 public class GetYahooDataService {
@@ -30,5 +32,21 @@ public class GetYahooDataService {
     CompanyCashFlow companyCashFlow = getCashFlowService.execute(symbol);
 
     return new YahooFullStockData(companyKeyStatistics, companyBalanceSheet, companyCashFlow, companyIncomeStatement);
+  }
+
+  public YahooFullStockData getStockAsync(String symbol) throws ExecutionException, InterruptedException {
+    GetKeyStatisticsService getKeyStatisticsService = new GetKeyStatisticsService();
+    CompletableFuture<CompanyKeyStatistics> companyKeyStatistics = getKeyStatisticsService.executeAsync(symbol);
+
+    GetBalanceSheetService getBalanceSheetService = new GetBalanceSheetService();
+    CompletableFuture<CompanyBalanceSheet> companyBalanceSheet = getBalanceSheetService.executeAsync(symbol);
+
+    GetIncomeStatementService getIncomeStatementService = new GetIncomeStatementService();
+    CompletableFuture<CompanyIncomeStatement> companyIncomeStatement = getIncomeStatementService.executeAsync(symbol);
+
+    GetCashFlowService getCashFlowService = new GetCashFlowService();
+    CompletableFuture<CompanyCashFlow> companyCashFlow = getCashFlowService.executeAsync(symbol);
+
+    return new YahooFullStockData(companyKeyStatistics.get(), companyBalanceSheet.get(), companyCashFlow.get(), companyIncomeStatement.get());
   }
 }
