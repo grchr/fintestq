@@ -20,6 +20,15 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: maven
+      - name: Configure GitHub Packages auth for Maven
+        uses: s4u/maven-settings-action@v2
+        with:
+          servers: |
+            [{
+              "id": "github",
+              "username": "${{ secrets.GITHUB_ACTOR }}",
+              "password": "${{ secrets.GITHUB_TOKEN }}"
+            }]    
 
       - name: Build
         run: ./mvnw verify -B
