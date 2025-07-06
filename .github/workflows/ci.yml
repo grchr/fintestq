@@ -27,8 +27,8 @@ jobs:
           servers: |
             [{
               "id": "github",
-              "username": "${{ secrets.GITHUB_ACTOR }}",
-              "password": "${{ secrets.GITHUB_TOKEN }}"
+              "username": "${{ secrets.REPO_USERNAME }}",
+              "password": "${{ secrets.REPO_PWD }}"
             }]
 
       - name: Build
