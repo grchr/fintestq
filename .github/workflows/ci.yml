@@ -18,12 +18,18 @@ jobs:
         uses: s4u/maven-settings-action@v2
         with:
           servers: |
-            github-yf-project:
-              username: ${{ secrets.REPO_USERNAME }}
-              password: ${{ secrets.REPO_PWD }}
-            github-yf-models-proto:
-              username: ${{ secrets.REPO_USERNAME }}
-              password: ${{ secrets.REPO_PWD }}
+            [
+              {
+                "id": "github-yf-project",
+                "username": "${{ secrets.REPO_USERNAME }}",
+                "password": "${{ secrets.REPO_PWD }}"
+              },
+              {
+                "id": "github-yf-models-proto",
+                "username": "${{ secrets.REPO_USERNAME }}",
+                "password": "${{ secrets.REPO_PWD }}"
+              }
+            ]
 
       - name: Set up Java
         uses: actions/setup-java@v4
