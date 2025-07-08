@@ -30,6 +30,10 @@ jobs:
                 "password": "${{ secrets.GITHUB_TOKEN }}"
               }
             ]
+      
+      - name: Clear Maven cache for grchr packages
+        run: rm -rf ~/.m2/repository/com/github/grchr
+      
       - name: Show Maven settings (debug)
         run: grep '<id>' ~/.m2/settings.xml || true
 
