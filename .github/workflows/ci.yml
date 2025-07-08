@@ -21,13 +21,13 @@ jobs:
             [
               {
                 "id": "github-yf-project",
-                "username": "${{ secrets.REPO_USERNAME }}",
-                "password": "${{ secrets.REPO_PWD }}"
+                "username": "${{ github.actor }}",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
               },
               {
                 "id": "github-yf-models-proto",
-                "username": "${{ secrets.REPO_USERNAME }}",
-                "password": "${{ secrets.REPO_PWD }}"
+                "username": "${{ github.actor }}",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
               }
             ]
 
