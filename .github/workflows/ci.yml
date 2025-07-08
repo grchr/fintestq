@@ -30,6 +30,8 @@ jobs:
                 "password": "${{ secrets.GITHUB_TOKEN }}"
               }
             ]
+      - name: Show Maven settings (debug)
+        run: grep '<id>' ~/.m2/settings.xml || true
 
       - name: Set up Java
         uses: actions/setup-java@v4
