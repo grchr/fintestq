@@ -76,6 +76,10 @@ docker network create kafka-net
 ```shell script
 docker build -f Dockerfile.jvm -t fintestq-app .
 ```
+- Push your image
+```shell script
+docker 
+```
 - Run your image:
 ```shell script
 docker run -d -p 8080:8080 --network kafka-net --name fintestq-app fintestq-app

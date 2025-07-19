@@ -9,7 +9,7 @@ function App() {
 
   const fetchStock = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/stocks/${symbol}`);
+      const response = await fetch(`/stocks/${symbol}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -25,6 +25,7 @@ function App() {
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
       <h2>Stock Search</h2>
+      <h3>Under construction</h3>
       <form
             onSubmit={(e) => {
               e.preventDefault(); // Prevent page reload

@@ -14,22 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure Maven GitHub Packages auth
-        uses: s4u/maven-settings-action@v2
-        with:
-          servers: |
-            [
-              {
-                "id": "github-yf-project",
-                "username": "${{ secrets.REPO_USERNAME }}",
-                "password": "${{ secrets.REPO_PWD }}"
-              },
-              {
-                "id": "github-yf-models-proto",
-                "username": "${{ secrets.REPO_USERNAME }}",
-                "password": "${{ secrets.REPO_PWD }}"
-              }
-            ]
+      - name: Clear Maven cache for grchr packages
+        run: rm -rf ~/.m2/repository/com/github/grchr
 
       - name: Set up Java
         uses: actions/setup-java@v4
