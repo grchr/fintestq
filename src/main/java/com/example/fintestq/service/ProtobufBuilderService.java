@@ -1,6 +1,5 @@
 package com.example.fintestq.service;
 
-import com.example.fintestq.kafka.model.StockData;
 import com.example.fintestq.model.YahooFullStockData;
 import com.opensource.yfmodels.CompanyTradingInformationProto;
 import jakarta.enterprise.context.ApplicationScoped;

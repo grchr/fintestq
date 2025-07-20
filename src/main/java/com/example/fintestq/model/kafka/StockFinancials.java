@@ -1,4 +1,4 @@
-package com.example.fintestq.kafka.model;
+package com.example.fintestq.model.kafka;
 
 import lombok.Builder;
 import lombok.Data;

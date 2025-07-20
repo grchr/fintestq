@@ -2,6 +2,7 @@ package com.example.fintestq.service;
 
 import com.example.fintestq.model.YahooFullStockData;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.logging.Logger;
 import org.opensource.model.CompanyBalanceSheet;
 import org.opensource.model.CompanyCashFlow;
 import org.opensource.model.CompanyIncomeStatement;
@@ -16,9 +17,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @ApplicationScoped
-public class GetYahooDataService {
+public class GetYahooStockDataServiceImpl implements IGetYahooStockDataService {
+
+  private static final Logger LOGGER = Logger.getLogger(GetYahooStockDataServiceImpl.class);
 
   public YahooFullStockData getStock(String symbol) throws IOException {
+    LOGGER.info("Applying main data fetching service");
     GetKeyStatisticsService getKeyStatisticsService = new GetKeyStatisticsService();
     CompanyKeyStatistics companyKeyStatistics = getKeyStatisticsService.execute(symbol);
 
@@ -35,6 +39,7 @@ public class GetYahooDataService {
   }
 
   public YahooFullStockData getStockAsync(String symbol) throws ExecutionException, InterruptedException {
+    LOGGER.info("Applying main data fetching service");
     GetKeyStatisticsService getKeyStatisticsService = new GetKeyStatisticsService();
     CompletableFuture<CompanyKeyStatistics> companyKeyStatistics = getKeyStatisticsService.executeAsync(symbol);
 

@@ -1,7 +1,7 @@
-package com.example.fintestq.kafka.service;
+package com.example.fintestq.service.kafka;
 
-import com.example.fintestq.kafka.model.StockData;
-import com.example.fintestq.kafka.model.StockFinancials;
+import com.example.fintestq.model.kafka.StockData;
+import com.example.fintestq.model.kafka.StockFinancials;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;

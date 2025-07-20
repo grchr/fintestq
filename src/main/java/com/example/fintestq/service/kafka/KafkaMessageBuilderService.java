@@ -1,7 +1,7 @@
-package com.example.fintestq.kafka.service;
+package com.example.fintestq.service.kafka;
 
-import com.example.fintestq.kafka.model.StockData;
-import com.example.fintestq.kafka.model.StockFinancials;
+import com.example.fintestq.model.kafka.StockData;
+import com.example.fintestq.model.kafka.StockFinancials;
 import com.example.fintestq.model.YahooFullStockData;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -18,7 +18,7 @@ public class KafkaMessageBuilderService {
   public StockFinancials buildStockFinancials(YahooFullStockData rawData) {
     return StockFinancials.builder()
             .symbol(rawData.getCompanyKeyStatistics().getCompanyTicker())
-            .totalDebt(Double.parseDouble(rawData.getCompanyKeyStatistics().getTotalDebt()))
+            .totalDebt(rawData.getCompanyBalanceSheet().getTotalDebt())
             .freeCashFlowTTM(rawData.getCompanyCashFlow().getFreeCashFlowTTM())
             .build();
   }

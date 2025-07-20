@@ -1,11 +1,12 @@
 package com.example.fintestq.controller;
 
-import com.example.fintestq.kafka.model.StockData;
-import com.example.fintestq.kafka.model.StockFinancials;
-import com.example.fintestq.kafka.service.KafkaEmitterService;
-import com.example.fintestq.kafka.service.KafkaMessageBuilderService;
 import com.example.fintestq.model.YahooFullStockData;
-import com.example.fintestq.service.GetYahooDataService;
+import com.example.fintestq.model.kafka.StockData;
+import com.example.fintestq.model.kafka.StockFinancials;
+import com.example.fintestq.service.IGetYahooStockDataService;
+import com.example.fintestq.service.ProtobufBuilderService;
+import com.example.fintestq.service.kafka.KafkaEmitterService;
+import com.example.fintestq.service.kafka.KafkaMessageBuilderService;
 import com.opensource.yfmodels.CompanyTradingInformationProto;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -28,7 +29,7 @@ public class StockController {
   private static final Logger LOGGER = Logger.getLogger(StockController.class);
 
   @Inject
-  private GetYahooDataService getYahooDataService;
+  private IGetYahooStockDataService getYahooDataService;
 
   @Inject
   private KafkaEmitterService kafkaEmitterService;
@@ -36,16 +37,15 @@ public class StockController {
   @Inject
   private KafkaMessageBuilderService kafkaMessageBuilderService;
 
+  @Inject
+  private ProtobufBuilderService protobufBuilderService;
+
   @GET
   @Path("/{symbol}")
   @Operation(summary = "Get stock data", description = "Get stock data using the custom made yf-project")
   public YahooFullStockData getStockData(@PathParam("symbol") String symbol) {
     try {
-      YahooFullStockData stock = getYahooDataService.getStock(symbol);
-
-      handleKafkaMessaging(symbol, stock);
-
-      return stock;
+      return getYahooDataService.getStock(symbol);
     } catch (IOException e) {
       LOGGER.infof("Application failed to get data for %s", symbol);
       return new YahooFullStockData(null, null, null, null);
@@ -59,16 +59,7 @@ public class StockController {
   public Response getStockDataProto(@PathParam("symbol") String symbol) {
     try {
       YahooFullStockData stock = getYahooDataService.getStock(symbol);
-
-      handleKafkaMessaging(symbol, stock);
-
-      CompanyTradingInformationProto.CompanyTradingInformation tradingInformation = CompanyTradingInformationProto.CompanyTradingInformation.newBuilder()
-              .setCompanyName(stock.getCompanyKeyStatistics().getCompanyName())
-              .setCompanyTicker(symbol)
-              .setCurrentPrice(stock.getCompanyKeyStatistics().getCurrentPrice())
-              .setForwardAnnualDividendRate(stock.getCompanyKeyStatistics().getTradingInformation().getForwardAnnualDividendRate())
-              .build();
-
+      CompanyTradingInformationProto.CompanyTradingInformation tradingInformation = protobufBuilderService.buildTradingInfoData(stock);
       return Response.ok(tradingInformation).build();
     } catch (IOException e) {
       LOGGER.infof("Application failed to get data for %s", symbol);
@@ -86,20 +77,6 @@ public class StockController {
       LOGGER.infof("Application failed to get data for %s", symbol);
       return new YahooFullStockData(null, null, null, null);
     }
-  }
-
-  private void handleKafkaMessaging(String symbol, YahooFullStockData stock) {
-    CompletableFuture.runAsync(() -> {
-      try {
-        StockData stockData = kafkaMessageBuilderService.buildStockData(stock);
-        kafkaEmitterService.sendStockData(stockData);
-        StockFinancials stockFinancials = kafkaMessageBuilderService.buildStockFinancials(stock);
-        kafkaEmitterService.sendFinancialData(stockFinancials);
-        LOGGER.infof("Kafka message sent for %s", symbol);
-      } catch (Exception e) {
-        LOGGER.warnf("Kafka message failed for %s: %s", symbol, e.getMessage());
-      }
-    });
   }
 
 }
