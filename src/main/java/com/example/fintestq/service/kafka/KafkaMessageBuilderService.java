@@ -12,6 +12,7 @@ public class KafkaMessageBuilderService {
     return StockData.builder()
             .symbol(rawData.getCompanyKeyStatistics().getCompanyTicker())
             .price(rawData.getCompanyKeyStatistics().getCurrentPrice())
+            .currency(rawData.getCompanyKeyStatistics().getCurrency())
             .build();
   }
 

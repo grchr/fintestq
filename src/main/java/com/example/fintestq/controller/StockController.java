@@ -3,6 +3,7 @@ package com.example.fintestq.controller;
 import com.example.fintestq.model.YahooFullStockData;
 import com.example.fintestq.model.kafka.StockData;
 import com.example.fintestq.model.kafka.StockFinancials;
+import com.example.fintestq.service.GetYahooStockDataServiceImpl;
 import com.example.fintestq.service.IGetYahooStockDataService;
 import com.example.fintestq.service.ProtobufBuilderService;
 import com.example.fintestq.service.kafka.KafkaEmitterService;
@@ -29,7 +30,7 @@ public class StockController {
   private static final Logger LOGGER = Logger.getLogger(StockController.class);
 
   @Inject
-  private IGetYahooStockDataService getYahooDataService;
+  private GetYahooStockDataServiceImpl getYahooDataService;
 
   @Inject
   private KafkaEmitterService kafkaEmitterService;
@@ -45,7 +46,11 @@ public class StockController {
   @Operation(summary = "Get stock data", description = "Get stock data using the custom made yf-project")
   public YahooFullStockData getStockData(@PathParam("symbol") String symbol) {
     try {
-      return getYahooDataService.getStock(symbol);
+      YahooFullStockData stock = getYahooDataService.getStock(symbol);
+
+      handleKafkaMessaging(symbol, stock);
+
+      return stock;
     } catch (IOException e) {
       LOGGER.infof("Application failed to get data for %s", symbol);
       return new YahooFullStockData(null, null, null, null);
@@ -60,6 +65,7 @@ public class StockController {
     try {
       YahooFullStockData stock = getYahooDataService.getStock(symbol);
       CompanyTradingInformationProto.CompanyTradingInformation tradingInformation = protobufBuilderService.buildTradingInfoData(stock);
+      handleKafkaMessaging(symbol, stock);
       return Response.ok(tradingInformation).build();
     } catch (IOException e) {
       LOGGER.infof("Application failed to get data for %s", symbol);
@@ -77,6 +83,20 @@ public class StockController {
       LOGGER.infof("Application failed to get data for %s", symbol);
       return new YahooFullStockData(null, null, null, null);
     }
+  }
+
+  private void handleKafkaMessaging(String symbol, YahooFullStockData stock) {
+    CompletableFuture.runAsync(() -> {
+      try {
+        StockData stockData = kafkaMessageBuilderService.buildStockData(stock);
+        kafkaEmitterService.sendStockData(stockData);
+        StockFinancials stockFinancials = kafkaMessageBuilderService.buildStockFinancials(stock);
+        kafkaEmitterService.sendFinancialData(stockFinancials);
+        LOGGER.infof("Kafka message sent for %s", symbol);
+      } catch (Exception e) {
+        LOGGER.warnf("Kafka message failed for %s: %s", symbol, e.getMessage());
+      }
+    });
   }
 
 }
