@@ -21,7 +21,7 @@ public class MetricsController {
   private ComputationalService computationalService;
 
   @GET
-  @Path("/{symbol}")
+  @Path("/v1/{symbol}")
   @Operation(summary = "Compute stock metrics data", description = "Compute and get metrics calculated using the custom made yf-project")
   public MetricsData getMetricsData(@PathParam("symbol") String symbol) {
     try {

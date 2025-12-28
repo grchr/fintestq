@@ -3,14 +3,17 @@ package com.example.fintestq.service;
 import com.example.fintestq.model.YahooFullStockData;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jboss.logging.Logger;
+import org.opensource.exceptions.YahooServiceException;
 import org.opensource.model.CompanyBalanceSheet;
 import org.opensource.model.CompanyCashFlow;
 import org.opensource.model.CompanyIncomeStatement;
 import org.opensource.model.CompanyKeyStatistics;
+import org.opensource.model.response.tradedata.YahooTradeData;
 import org.opensource.service.GetBalanceSheetService;
 import org.opensource.service.GetCashFlowService;
 import org.opensource.service.GetIncomeStatementService;
 import org.opensource.service.GetKeyStatisticsService;
+import org.opensource.service.v2.TradeDataService;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -53,5 +56,15 @@ public class GetYahooStockDataServiceImpl implements IGetYahooStockDataService {
     CompletableFuture<CompanyCashFlow> companyCashFlow = getCashFlowService.executeAsync(symbol);
 
     return new YahooFullStockData(companyKeyStatistics.get(), companyBalanceSheet.get(), companyCashFlow.get(), companyIncomeStatement.get());
+  }
+
+  public YahooTradeData getTradeData(String symbol) throws YahooServiceException {
+    TradeDataService tradeDataService = new TradeDataService();
+    try {
+      return tradeDataService.execute(symbol);
+    } catch (YahooServiceException e) {
+      LOGGER.warnf("Failed to get trade data for %s: %s", symbol, e.getMessage());
+      throw new YahooServiceException("Failed to get trade data for " + symbol, e);
+    }
   }
 }

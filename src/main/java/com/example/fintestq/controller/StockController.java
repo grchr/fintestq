@@ -18,6 +18,8 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
+import org.opensource.exceptions.YahooServiceException;
+import org.opensource.model.response.tradedata.YahooTradeData;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +44,7 @@ public class StockController {
   private ProtobufBuilderService protobufBuilderService;
 
   @GET
-  @Path("/{symbol}")
+  @Path("/v1/{symbol}")
   @Operation(summary = "Get stock data", description = "Get stock data using the custom made yf-project")
   public YahooFullStockData getStockData(@PathParam("symbol") String symbol) {
     try {
@@ -58,8 +60,24 @@ public class StockController {
   }
 
   @GET
+  @Path("/v2/tradedata/{symbol}")
+  @Operation(summary = "Get stock data", description = "Get stock data using the custom made yf-project")
+  public YahooTradeData getTradeData(@PathParam("symbol") String symbol) {
+    try {
+      YahooTradeData tradeData = getYahooDataService.getTradeData(symbol);
+
+      //handleKafkaMessaging(symbol, stock);
+
+      return tradeData;
+    } catch (YahooServiceException e) {
+      LOGGER.infof("Application failed to get data for %s", symbol);
+      return new YahooTradeData();
+    }
+  }
+
+  @GET
   @Produces("application/x-protobuf")
-  @Path("/proto/{symbol}")
+  @Path("/v1/proto/{symbol}")
   @Operation(summary = "Get stock data", description = "Get stock data using the custom made yf-project")
   public Response getStockDataProto(@PathParam("symbol") String symbol) {
     try {
@@ -74,7 +92,7 @@ public class StockController {
   }
 
   @GET
-  @Path("/async/{symbol}")
+  @Path("/v1/async/{symbol}")
   @Operation(summary = "Get stock data in async execution", description = "Get stock data using the custom made yf-project using asynchronous execution")
   public YahooFullStockData getStockDataAsync(@PathParam("symbol") String symbol) {
     try {

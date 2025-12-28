@@ -13,10 +13,11 @@ function App() {
   const [symbol, setSymbol] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [tradeData, setTradeData] = useState(null);
 
   const fetchStock = async () => {
     try {
-      const response = await fetch(`/stocks/${symbol}`);
+      const response = await fetch(`/stocks/v1/${symbol}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -89,6 +90,21 @@ function App() {
     }
   };
 
+  const fetchTradeData = async () => {
+    try {
+      const response = await fetch(`/stocks/v2/tradedata/${symbol}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTradeData(data); // Store the result in state
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      setTradeData(null);
+    }
+  };
+
   return (
       <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
         <h2 style={{ color: '#6400CD' }}>Stock Search</h2>
@@ -118,6 +134,19 @@ function App() {
           >
             Search
           </button>
+          <button
+                    type="button"
+                    onClick={fetchTradeData}
+                    style={{
+                      backgroundColor: '#007BFF',
+                      color: 'white',
+                      padding: '0.5rem 1rem',
+                      border: 'none',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    Fetch Trade Data
+                  </button>
         </form>
 
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -130,6 +159,14 @@ function App() {
             <CollapsibleSection title="Balance Sheet" data={result.companyBalanceSheet} />
           </div>
         )}
+              {tradeData && (
+                <div style={{ marginTop: '2rem' }}>
+                  <h3>Trade Data</h3>
+                  <pre style={{ backgroundColor: '#f4f4f4', padding: '1rem' }}>
+                    {JSON.stringify(tradeData, null, 2)}
+                  </pre>
+                </div>
+              )}
       </div>
     );
   }

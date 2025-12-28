@@ -50,12 +50,14 @@ spec:
       protocol: TCP
   type: ClusterIP
 ---
+# OpenShift config to expose the fintestq-app
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: fintestq-app
   namespace: grchronis-dev
 spec:
+#  host: fintestq-app-grchronis-dev.apps.sandbox.example.openshift.com
   to:
     kind: Service
     name: fintestq-app

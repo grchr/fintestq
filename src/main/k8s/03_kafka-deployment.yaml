@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: bitnami/kafka:3.4
+          image: 1171821/kafka:3.4
           ports:
             - containerPort: 9092
             - containerPort: 9093

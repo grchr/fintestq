@@ -38,6 +38,7 @@ spec:
       protocol: TCP
   type: ClusterIP
 ---
+# OpenShift config to expose Kafka UI
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
