@@ -4,7 +4,6 @@ import com.example.fintestq.model.YahooFullStockData;
 import com.example.fintestq.model.kafka.StockData;
 import com.example.fintestq.model.kafka.StockFinancials;
 import com.example.fintestq.service.GetYahooStockDataServiceImpl;
-import com.example.fintestq.service.IGetYahooStockDataService;
 import com.example.fintestq.service.ProtobufBuilderService;
 import com.example.fintestq.service.kafka.KafkaEmitterService;
 import com.example.fintestq.service.kafka.KafkaMessageBuilderService;

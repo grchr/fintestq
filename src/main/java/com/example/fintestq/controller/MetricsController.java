@@ -20,6 +20,9 @@ public class MetricsController {
   @Inject
   private ComputationalService computationalService;
 
+//  @Inject
+//  private
+
   @GET
   @Path("/v1/{symbol}")
   @Operation(summary = "Compute stock metrics data", description = "Compute and get metrics calculated using the custom made yf-project")
